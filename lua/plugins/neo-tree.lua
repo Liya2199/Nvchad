@@ -2,7 +2,9 @@
 
 return {
   "nvim-neo-tree/neo-tree.nvim",
-  -- cmd = "Neotree",
+  -- 必须保留: configs/lazy.lua 里 defaults={lazy=true}, 去掉这个 cmd 就既不会
+  -- 懒加载也不会启动加载,插件永远不加载,<leader>e 报 E492 Not an editor command
+  cmd = "Neotree",
   dependencies = {
     "nvim-lua/plenary.nvim",
     "nvim-tree/nvim-web-devicons",
