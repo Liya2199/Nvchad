@@ -34,16 +34,12 @@ return {
 
   -- ===== 以下是 LazyVim 里习惯用、NvChad 默认没有的 =====
 
-  -- nvim 分屏 <-> tmux 面板无缝切换 (C-h/j/k/l)
-  -- 键位统一在 lua/mappings.lua 里定义，这里关掉插件自带的映射避免重复
+  -- vim-tmux-navigator 暂时禁用(2026-10-27):
+  -- nvim/tmux 两侧 zoomed 配置曾互相矛盾导致绑定失效,
+  -- 先停用; 窗口切换用纯 vim 的 C-h/j/k/l (见 mappings.lua), 与 tmux 无关
   {
     "christoomey/vim-tmux-navigator",
-    lazy = false,
-    init = function()
-      vim.g.tmux_navigator_no_mappings = 1   -- 映射自己在 mappings.lua 管
-      vim.g.tmux_navigator_save_on_switch = 1 -- 跳出 nvim 前自动保存
-      vim.g.tmux_navigator_disable_when_zoomed = 1
-    end,
+    enabled = false,
   },
 
   -- s / S 跳转,比 / 快得多
