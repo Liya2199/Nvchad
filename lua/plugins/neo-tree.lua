@@ -10,9 +10,6 @@ return {
     "nvim-tree/nvim-web-devicons",
     "MunifTanjim/nui.nvim",
   },
-  --keys = {
-  -- { "<leader>e", "<cmd>Neotree toggle<cr>", desc = "Toggle Neo-tree" }, }
-
   opts = {
     -- press H to show/hide files
     open_files_in_last_window = true,

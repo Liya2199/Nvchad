@@ -19,24 +19,31 @@ map({ "n", "i", "v" }, "<C-s>", "<cmd> w <cr><esc>", { desc = "保存" })
 map("n", "<Esc>", "<cmd> noh <cr>", { desc = "清除高亮" })
 
 -- ── 终端呼出/隐藏 ───────────────────────
--- 完整键位表:
---   <C-\>       呼出/隐藏终端   (NvChad 原版键,普通模式)
---   <C-/>       呼出/隐藏终端   (LazyVim 同款,普通模式 + 终端内都能按;
---                              注意部分终端会发成 C-_,同一个字节 0x1f,等效)
---   <M-i>       呼出/隐藏终端   (Alt+i,普通模式 + 终端内都能按;
---                              C-/ 在某些终端环境下不生效时的备用键)
---   <leader>tt  同上,别名; 只用 <leader>tt,不占用 <leader>t 前缀(NvChad 的 <leader>th 主题切换还在)
---   终端内退出终端模式(回普通模式): <C-\><C-n>(vim 标准) 或 <C-x>(NvChad 默认)
---   终端内收起终端: <C-/> 或 <M-i>
+-- 完整键位表 (统一用 toggleterm,不再混用 NvChad 自带的 nvchad.term):
+--   <C-\>       呼出/隐藏终端浮窗 (普通模式 + 终端内都能按)
+--   <C-/>       同上 (LazyVim 同款; 部分终端把它发成 C-_,同一个字节 0x1f,等效)
+--   <M-i>       同上 (Alt+i,备用键)
+--   <leader>tt  同上,别名
+--   <leader>h   横向分屏终端 (原 NvChad 键走 nvchad.term,与 toggleterm 互不相通、
+--               C-\/M-i 都关不掉,所以改为 toggleterm 横向)
+--   <leader>v   纵向分屏终端 (同上,改为 toggleterm 纵向)
+--   终端内回普通模式: <C-\><C-n> (vim 标准) 或 <C-x> (NvChad 默认)
 -- 注意:
---   1. 这里自建映射而不用 toggleterm 的 open_mapping —— open_mapping 的全局映射
---      要等插件懒加载后才创建,首次开终端前按 <C-\> 会没反应(踩过坑)
---   2. 终端模式内不映射 <C-\>,标准逃生序列 <C-\><C-n> 才能正常用
+--   1. 自建映射而不用 toggleterm 的 open_mapping —— 它要等插件懒加载后才创建,
+--      首次按键前不存在(踩过坑)
+--   2. t 模式必须先显式映射 <C-\><C-n> 再映射 <C-\>: vim 最长匹配优先,
+--      快速连按 <C-\><C-n> 仍是标准逃生; 若 <C-\> 后停顿超过 timeoutlen,
+--      才会触发"隐藏终端"
+--   3. 浮窗 / <leader>h / <leader>v 是 toggleterm 里三个独立终端实例,各开各关;
+--      在某个终端内按键,只会收起当前这一个
+map("t", "<C-\\><C-n>", "<C-\\><C-n>", { desc = "终端逃生到普通模式 (标准)" })
+map("t", "<C-\\>", "<cmd>ToggleTerm<cr>", { desc = "隐藏终端 (终端内)" })
 map({ "n", "t" }, "<C-/>", "<cmd>ToggleTerm<cr>", { desc = "呼出/隐藏终端" })
 map("n", "<C-\\>", "<cmd>ToggleTerm<cr>", { desc = "呼出/隐藏终端 (NvChad 原版)" })
 map({ "n", "t" }, "<M-i>", "<cmd>ToggleTerm<cr>", { desc = "呼出/隐藏终端 (Alt+i)" })
--- <leader>tt 别名
 map({ "n", "t" }, "<leader>tt", "<cmd>ToggleTerm<cr>", { desc = "呼出/隐藏终端" })
+map("n", "<leader>h", "<cmd>ToggleTerm size=15 direction=horizontal<cr>", { desc = "终端 横向分屏" })
+map("n", "<leader>v", "<cmd>ToggleTerm size=100 direction=vertical<cr>", { desc = "终端 纵向分屏" })
 
 -- 窗口间移动: 纯 vim 方案 (不依赖 tmux)
 -- C-h/j/k/l 在 nvim 分屏间移动, 原版行为需先按 C-w, 这个更顺手
@@ -97,3 +104,37 @@ end, { desc = "上一个诊断" })
 map("n", "]d", function()
   vim.diagnostic.jump { count = 1, float = true }
 end, { desc = "下一个诊断" })
+
+-- <leader>/ 全局搜索文本 (LazyVim 同款; NvChad 原版叫 <leader>fw)
+map("n", "<leader>/", "<cmd>Telescope live_grep<cr>", { desc = "全局搜索文本" })
+
+-- ── 临时按键诊断 (C-/ 案子查完就删) ──────────────
+-- 目的: 抓到终端对 <C-/> 实际发送的字节,确认它到底是不是 0x1f。
+-- 用法: 打开 nvim → 普通模式按 2 下 <C-/>、进终端再按 2 下 <C-/> → 告诉助手 → 看 /tmp/nvim_keys.log
+do
+  local path = "/tmp/nvim_keys.log"
+  local f = io.open(path, "a")
+  if f then
+    f:write(string.format("===== session start %s pid=%d nvim=%s.%s =====\n",
+      os.date(), vim.fn.getpid(), vim.version().major, vim.version().minor))
+    f:close()
+  end
+  vim.on_key(function(k)
+    local only_printable = true
+    for i = 1, #k do
+      local b = k:byte(i)
+      if b < 32 or b > 126 then
+        only_printable = false
+        break
+      end
+    end
+    if not only_printable then
+      local f2 = io.open(path, "a")
+      f2:write(os.date("%H:%M:%S ") .. "mode=" .. vim.api.nvim_get_mode().mode
+        .. "  key=" .. vim.fn.keytrans(k)
+        .. "  hex=" .. k:gsub(".", function(c) return string.format("%02x ", c:byte()) end)
+        .. "\n")
+      f2:close()
+    end
+  end)
+end

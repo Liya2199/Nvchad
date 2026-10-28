@@ -4,7 +4,7 @@ local options = {
 
     sh = { "shfmt" },
     bash = { "shfmt" },
-    zsh = { "shfmt" },
+    -- zsh 不列: shfmt 只懂 POSIX/bash,遇到 zsh 特有语法(如 ${(f)x})会报错
 
     javascript = { "prettier" },
     javascriptreact = { "prettier" },
