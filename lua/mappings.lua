@@ -42,8 +42,12 @@ map({ "n", "t" }, "<C-/>", "<cmd>ToggleTerm<cr>", { desc = "呼出/隐藏终端"
 map("n", "<C-\\>", "<cmd>ToggleTerm<cr>", { desc = "呼出/隐藏终端 (NvChad 原版)" })
 map({ "n", "t" }, "<M-i>", "<cmd>ToggleTerm<cr>", { desc = "呼出/隐藏终端 (Alt+i)" })
 map({ "n", "t" }, "<leader>tt", "<cmd>ToggleTerm<cr>", { desc = "呼出/隐藏终端" })
-map("n", "<leader>h", "<cmd>ToggleTerm size=15 direction=horizontal<cr>", { desc = "终端 横向分屏" })
-map("n", "<leader>v", "<cmd>ToggleTerm size=100 direction=vertical<cr>", { desc = "终端 纵向分屏" })
+map("n", "<leader>h", "<cmd>ToggleTerm size=15 direction=horizontal<cr>", { desc = "终端 横向分屏 (15行)" })
+-- 纵向用 40% 屏宽(动态算),写死列数在窗口太窄/太宽时都不合适:
+-- toggleterm.toggle(count, size, dir, direction), count 传 0 走默认切换
+map("n", "<leader>v", function()
+  require("toggleterm").toggle(0, math.floor(vim.o.columns * 0.4), nil, "vertical")
+end, { desc = "终端 纵向分屏 (40%宽)" })
 
 -- 窗口间移动: 纯 vim 方案 (不依赖 tmux)
 -- C-h/j/k/l 在 nvim 分屏间移动, 原版行为需先按 C-w, 这个更顺手
