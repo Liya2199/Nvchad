@@ -105,6 +105,12 @@ return {
         end
       end,
       open_mapping = [[<c-\>]],
+      -- 关键: 终端内不映射 open_mapping。
+      -- 否则在终端里按标准逃生序列 <C-\><C-n>(回普通模式)时,
+      -- 第一个 <C-\> 会被拦截直接关掉终端,序列失效。
+      -- 关掉后终端内保留: <C-\><C-n>(vim 标准) 和 <C-x>(NvChad 默认) 两种退出方式
+      terminal_mappings = false,
+      -- 终端内收起终端用 <C-/> (见 mappings.lua), 不占用 <C-\>
       shade_terminals = false,
       start_in_insert = true,
       persist_size = true,
