@@ -18,6 +18,15 @@ map({ "n", "i", "v" }, "<C-s>", "<cmd> w <cr><esc>", { desc = "保存" })
 -- 用 Esc 清掉搜索高亮
 map("n", "<Esc>", "<cmd> noh <cr>", { desc = "清除高亮" })
 
+-- ── 终端呼出/隐藏 (LazyVim 手感) ──
+-- toggleterm 的 open_mapping 是原版 NvChad 的 <C->\>,这里补上:
+-- <C-/>: LazyVim 同款,n/终端模式都能按
+-- 注意终端兼容性: 大多数老终端把 C-/ 发成 C-_(同一个字节 0x1f),所以两个键效果相同,
+-- 都能用; 现代终端(kitty协议)下则各自独立
+map({ "n", "t" }, "<C-/>", "<cmd>ToggleTerm<cr>", { desc = "呼出/隐藏终端" })
+-- <leader>tt 作为别名; 不要直映 <leader>t,会撞 NvChad 自带的 <leader>th (主题切换)
+map({ "n", "t" }, "<leader>tt", "<cmd>ToggleTerm<cr>", { desc = "呼出/隐藏终端" })
+
 -- 窗口间移动: 纯 vim 方案 (不依赖 tmux)
 -- C-h/j/k/l 在 nvim 分屏间移动, 原版行为需先按 C-w, 这个更顺手
 -- (tmux 面板间切换用 tmux 原生 C-a 方向键/重复按 C-a)
