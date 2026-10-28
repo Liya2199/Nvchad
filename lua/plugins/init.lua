@@ -104,13 +104,11 @@ return {
           return vim.o.columns * 0.4
         end
       end,
-      open_mapping = [[<c-\>]],
-      -- 关键: 终端内不映射 open_mapping。
-      -- 否则在终端里按标准逃生序列 <C-\><C-n>(回普通模式)时,
-      -- 第一个 <C-\> 会被拦截直接关掉终端,序列失效。
-      -- 关掉后终端内保留: <C-\><C-n>(vim 标准) 和 <C-x>(NvChad 默认) 两种退出方式
-      terminal_mappings = false,
-      -- 终端内收起终端用 <C-/> (见 mappings.lua), 不占用 <C-\>
+      -- 不设 open_mapping! 它的全局映射要等插件加载后才创建,
+      -- 而插件是懒加载的 → 首次开终端前按 <C-\> 无反应(踩过坑)。
+      -- 开关键位统一在 mappings.lua 里自建: <C-\> / <C-/> / <leader>tt
+      -- terminal_mappings 也不用开: 终端内不映射任何开关键,
+      -- 保留标准逃生 <C-\><C-n> 和 NvChad 默认的 <C-x>>
       shade_terminals = false,
       start_in_insert = true,
       persist_size = true,

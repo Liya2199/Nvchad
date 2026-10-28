@@ -19,17 +19,21 @@ map({ "n", "i", "v" }, "<C-s>", "<cmd> w <cr><esc>", { desc = "保存" })
 map("n", "<Esc>", "<cmd> noh <cr>", { desc = "清除高亮" })
 
 -- ── 终端呼出/隐藏 ───────────────────────
--- 完整键位表(避免以后忘了):
---   <C-/>       呼出/隐藏终端   (LazyVim 同款; 普通模式 + 终端内都能按)
---   <C-\>       呼出/隐藏终端   (NvChad 原版; 仅普通模式, 由 toggleterm open_mapping 提供)
+-- 完整键位表:
+--   <C-\>       呼出/隐藏终端   (NvChad 原版键,普通模式)
+--   <C-/>       呼出/隐藏终端   (LazyVim 同款,普通模式 + 终端内都能按)
+--   <leader>tt  同上,别名; 只用 <leader>tt,不占用 <leader>t 前缀(NvChad 的 <leader>th 主题切换还在)
 --   终端内退出终端模式(回普通模式): <C-\><C-n>(vim 标准) 或 <C-x>(NvChad 默认)
 --   终端内收起终端: <C-/>
 -- 注意:
---   1. 不要映射 <leader>tt 之类的前缀占用, <leader>t 留给 NvChad 的 <leader>th 主题切换
+--   1. 这里自建映射而不用 toggleterm 的 open_mapping —— open_mapping 的全局映射
+--      要等插件懒加载后才创建,首次开终端前按 <C-\> 会没反应(踩过坑)
 --   2. 老终端里 C-/ 和 C-_ 是同一个字节(0x1f), 所以按 C-_ 也等效
---   3. toggleterm 已设 terminal_mappings=false, 终端内不拦截 <C-\>,
---      这样标准逃生序列 <C-\><C-n> 才能正常用
+--   3. 终端模式内不映射 <C-\>,标准逃生序列 <C-\><C-n> 才能正常用
 map({ "n", "t" }, "<C-/>", "<cmd>ToggleTerm<cr>", { desc = "呼出/隐藏终端" })
+map("n", "<C-\\>", "<cmd>ToggleTerm<cr>", { desc = "呼出/隐藏终端 (NvChad 原版)" })
+-- <leader>tt 别名
+map({ "n", "t" }, "<leader>tt", "<cmd>ToggleTerm<cr>", { desc = "呼出/隐藏终端" })
 
 -- 窗口间移动: 纯 vim 方案 (不依赖 tmux)
 -- C-h/j/k/l 在 nvim 分屏间移动, 原版行为需先按 C-w, 这个更顺手
